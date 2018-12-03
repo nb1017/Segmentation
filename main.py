@@ -16,12 +16,12 @@ from torch.nn import functional as F
 from torch.utils import data
 from torchvision import models
 import argparse
-
+from models.UNet import UNet11
 parser=argparse.ArgumentParser
 
 
-device = 'cuda:0'
-data_src = '../input/'
+device = 'cuda'
+data_src = './'
 
 quick_try = False
 grayscale = False
@@ -44,8 +44,8 @@ y_train = []
 
 print('Loading training set.')
 for i in tqdm.tqdm(train_df.index):
-    img_src = '{}train/images/{}.png'.format(data_src, i)
-    mask_src = '{}train/masks/{}.png'.format(data_src, i)
+    img_src = '{}/train/images/{}.png'.format(data_src, i)
+    mask_src = '{}/train/masks/{}.png'.format(data_src, i)
     if grayscale:
         img_temp = cv2.imread(img_src, 0)
     else:
@@ -80,7 +80,7 @@ train_df['coverage_class'] = train_df.coverage.map(
 # gc.collect()
 
 train_path = data_src + 'train'
-test_path = data_src
+test_path = data_src+'test'
 
 train_ids = train_df.index.values
 test_ids = test_df.index.values
@@ -128,6 +128,12 @@ test_loader = data.DataLoader(
     shuffle=False,
     num_workers=4,
     pin_memory=True)
+
+def get_model(params):
+    model=UNet11(**params)
+    model.train()
+    return model.to(device)
+
 
 model = get_model({'num_filters': 32})
 # Set Binary Crossentropy as loss function.
