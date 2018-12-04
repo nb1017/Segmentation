@@ -17,6 +17,7 @@ from torch.utils import data
 from torchvision import models
 import argparse
 from models.UNet import UNet11
+from models.SegNet import SegNet
 parser=argparse.ArgumentParser
 
 
@@ -130,7 +131,8 @@ test_loader = data.DataLoader(
     pin_memory=True)
 
 def get_model(params):
-    model=UNet11(**params)
+    # model=UNet11(**params)
+    model=SegNet()
     model.train()
     return model.to(device)
 
